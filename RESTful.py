@@ -18,6 +18,9 @@ import string
 import pickle
 
 from print_format import Formatter
+
+from router_test import dummy_hello
+
 IMG_EXT = ['png', 'jpg', 'tif', 'tiff', 'jpeg', 'bmp']
 
 FAIL_INTERNAL = 'Internal Process Failure : '
@@ -73,7 +76,8 @@ class Session:
         
 app = FastAPI()
 # app.mount("/", StaticFiles(directory="web/asset"), name="static")
-        
+app.include_router(dummy_hello.router)
+
 @app.get("/")
 async def hello_world():
     return{'hello':'world'}
@@ -98,7 +102,11 @@ async def train(token, background_tasks: BackgroundTasks):
     
 @app.get("/current_progress")
 async def get_progress(token):
-    return sessions[token].current_progress()
+    return sessions[token].current_train_progress()
+
+@app.get("/logger_logs")
+async def get_logs(token):
+    return sessions[token].get_logs()
 
 @app.get("/readme")
 async def readme():
